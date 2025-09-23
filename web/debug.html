@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GIF Creation Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        canvas { border: 1px solid #000; margin: 10px; }
+        button { padding: 10px 20px; margin: 10px; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>GIF Creation Debug Tool</h1>
+    
+    <div class="test-section">
+        <h2>Library Check</h2>
+        <div id="libraryStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Simple GIF Test</h2>
+        <button onclick="testSimpleGif()">Create Simple Test GIF</button>
+        <div id="simpleResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>File Upload Test</h2>
+        <input type="file" id="fileInput" multiple accept=".png,.bmp">
+        <button onclick="testWithFiles()">Test with Uploaded Files</button>
+        <div id="fileResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div id="consoleLog" class="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gifshot@0.4.5/dist/gifshot.min.js"></script>
+    
+    <script>
+        // Override console.log to show in page
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logDiv = document.getElementById('consoleLog');
+        
+        function addToLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? 'red' : 'black';
+            div.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(div);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToLog(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+
+        // Check library status
+        function checkLibraries() {
+            const statusDiv = document.getElementById('libraryStatus');
+            let status = '<h3>Library Status:</h3>';
+            
+            if (typeof GIF !== 'undefined') {
+                status += '<p style="color: green;">✓ gif.js loaded successfully</p>';
+            } else {
+                status += '<p style="color: red;">✗ gif.js failed to load</p>';
+            }
+            
+            if (typeof gifshot !== 'undefined') {
+                status += '<p style="color: green;">✓ gifshot loaded successfully</p>';
+            } else {
+                status += '<p style="color: red;">✗ gifshot failed to load</p>';
+            }
+            
+            statusDiv.innerHTML = status;
+        }
+
+        function testSimpleGif() {
+            const resultDiv = document.getElementById('simpleResult');
+            resultDiv.innerHTML = 'Creating simple test GIF...';
+            
+            try {
+                if (typeof GIF === 'undefined') {
+                    throw new Error('gif.js not available');
+                }
+                
+                const gif = new GIF({
+                    workers: 1,
+                    quality: 10,
+                    width: 50,
+                    height: 50
+                });
+                
+                // Create 3 simple colored frames
+                const colors = ['#ff0000', '#00ff00', '#0000ff'];
+                
+                for (let i = 0; i < colors.length; i++) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 50;
+                    canvas.height = 50;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = colors[i];
+                    ctx.fillRect(0, 0, 50, 50);
+                    gif.addFrame(canvas, { delay: 500 });
+                }
+                
+                gif.on('finished', function(blob) {
+                    resultDiv.innerHTML = 'Simple GIF created! Size: ' + blob.size + ' bytes';
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'simple-test.gif';
+                    a.textContent = 'Download Simple Test GIF';
+                    resultDiv.appendChild(document.createElement('br'));
+                    resultDiv.appendChild(a);
+                });
+                
+                gif.on('progress', function(p) {
+                    resultDiv.innerHTML = 'Creating simple GIF... ' + Math.round(p * 100) + '%';
+                });
+                
+                gif.on('error', function(error) {
+                    resultDiv.innerHTML = 'Error: ' + error.message;
+                });
+                
+                gif.render();
+                
+            } catch (error) {
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            }
+        }
+
+        function testWithFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('fileResult');
+            
+            if (fileInput.files.length === 0) {
+                resultDiv.innerHTML = 'Please select some PNG or BMP files first.';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Processing uploaded files...';
+            
+            const files = Array.from(fileInput.files);
+            const images = [];
+            let maxWidth = 0;
+            let maxHeight = 0;
+            
+            // Load all images
+            Promise.all(files.map(file => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        maxWidth = Math.max(maxWidth, img.width);
+                        maxHeight = Math.max(maxHeight, img.height);
+                        images.push(img);
+                        resolve();
+                    };
+                    img.onerror = reject;
+                    img.src = URL.createObjectURL(file);
+                });
+            })).then(() => {
+                console.log(`Loaded ${images.length} images, max size: ${maxWidth}x${maxHeight}`);
+                
+                if (typeof GIF !== 'undefined') {
+                    createGifWithGifJs(images, maxWidth, maxHeight);
+                } else if (typeof gifshot !== 'undefined') {
+                    createGifWithGifshot(images, maxWidth, maxHeight);
+                } else {
+                    resultDiv.innerHTML = 'No GIF creation libraries available.';
+                }
+            }).catch(error => {
+                resultDiv.innerHTML = 'Error loading images: ' + error.message;
+            });
+        }
+
+        function createGifWithGifJs(images, maxWidth, maxHeight) {
+            const resultDiv = document.getElementById('fileResult');
+            resultDiv.innerHTML = 'Creating GIF with gif.js...';
+            
+            const gif = new GIF({
+                workers: 1,
+                quality: 20,
+                width: maxWidth,
+                height: maxHeight
+            });
+            
+            for (let i = 0; i < images.length; i++) {
+                const canvas = document.createElement('canvas');
+                canvas.width = maxWidth;
+                canvas.height = maxHeight;
+                const ctx = canvas.getContext('2d');
+                
+                // Fill white background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, maxWidth, maxHeight);
+                
+                // Center the image
+                const x = (maxWidth - images[i].width) / 2;
+                const y = (maxHeight - images[i].height) / 2;
+                ctx.drawImage(images[i], x, y);
+                
+                gif.addFrame(canvas, { delay: 500 });
+            }
+            
+            gif.on('finished', function(blob) {
+                resultDiv.innerHTML = 'GIF created with gif.js! Size: ' + blob.size + ' bytes';
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'file-test.gif';
+                a.textContent = 'Download File Test GIF';
+                resultDiv.appendChild(document.createElement('br'));
+                resultDiv.appendChild(a);
+            });
+            
+            gif.on('progress', function(p) {
+                resultDiv.innerHTML = 'Creating GIF with gif.js... ' + Math.round(p * 100) + '%';
+            });
+            
+            gif.on('error', function(error) {
+                resultDiv.innerHTML = 'gif.js Error: ' + error.message;
+            });
+            
+            gif.render();
+        }
+
+        function createGifWithGifshot(images, maxWidth, maxHeight) {
+            const resultDiv = document.getElementById('fileResult');
+            resultDiv.innerHTML = 'Creating GIF with gifshot...';
+            
+            const imageDataUrls = images.map(img => {
+                const canvas = document.createElement('canvas');
+                canvas.width = maxWidth;
+                canvas.height = maxHeight;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, maxWidth, maxHeight);
+                
+                const x = (maxWidth - img.width) / 2;
+                const y = (maxHeight - img.height) / 2;
+                ctx.drawImage(img, x, y);
+                
+                return canvas.toDataURL('image/png');
+            });
+            
+            gifshot.createGIF({
+                images: imageDataUrls,
+                gifWidth: maxWidth,
+                gifHeight: maxHeight,
+                interval: 500,
+                numFrames: images.length
+            }, function(obj) {
+                if (obj.error) {
+                    resultDiv.innerHTML = 'gifshot Error: ' + obj.error;
+                } else {
+                    resultDiv.innerHTML = 'GIF created with gifshot! Size: ' + obj.image.length + ' characters';
+                    const a = document.createElement('a');
+                    a.href = obj.image;
+                    a.download = 'file-test-gifshot.gif';
+                    a.textContent = 'Download File Test GIF (gifshot)';
+                    resultDiv.appendChild(document.createElement('br'));
+                    resultDiv.appendChild(a);
+                }
+            });
+        }
+
+        function clearLog() {
+            document.getElementById('consoleLog').innerHTML = '';
+        }
+
+        // Initialize
+        checkLibraries();
+    </script>
+</body>
+</html>

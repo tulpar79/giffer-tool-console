@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF Creator - Web Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+
+        .drop-zone.dragover {
+            border-style: solid;
+        }
+
+        .drop-zone-icon {
+            font-size: 4em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone-subtext {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .control-group input, .control-group select {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-list {
+            margin-bottom: 30px;
+        }
+
+        .file-list h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            margin-right: 10px;
+            color: #667eea;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .remove-file {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-file:hover {
+            background: #ff3742;
+        }
+
+        .preview-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .preview-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .preview-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-gif {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .no-preview {
+            color: #666;
+            font-style: italic;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #c62828;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 GIF Creator</h1>
+            <p>Drag & drop your PNG/BMP files to create animated GIFs</p>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon">📁</div>
+            <div class="drop-zone-text">Drop your image files here</div>
+            <div class="drop-zone-subtext">Supports PNG and BMP files • All processing happens in your browser</div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="fps">Frames per Second</label>
+                <input type="number" id="fps" value="10" min="1" max="60" step="0.1">
+            </div>
+            <div class="control-group">
+                <label for="background">Background Color</label>
+                <input type="color" id="background" value="#f8f9fa">
+            </div>
+        </div>
+
+        <div class="file-list" id="fileList" style="display: none;">
+            <h3>Selected Files</h3>
+            <div id="fileItems"></div>
+        </div>
+
+        <div class="preview-section" id="previewSection" style="display: none;">
+            <h3>Preview</h3>
+            <div class="preview-container">
+                <div class="no-preview" id="noPreview">Generate GIF to see preview</div>
+                <img id="previewGif" class="preview-gif" style="display: none;">
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>Creating your GIF...</div>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="actions">
+            <button class="btn btn-primary" id="generateBtn" disabled>
+                🎬 Generate GIF
+            </button>
+            <button class="btn btn-secondary" id="downloadBtn" disabled>
+                💾 Download GIF
+            </button>
+        </div>
+    </div>
+
+    <!-- Include gif.js library for client-side GIF creation -->
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+    <!-- Alternative: Include gifshot library as fallback -->
+    <script src="https://cdn.jsdelivr.net/npm/gifshot@0.4.5/dist/gifshot.min.js"></script>
+    
+    <script>
+        class GifCreator {
+            constructor() {
+                this.files = [];
+                this.gifBlob = null;
+                this.supportedExtensions = ['.png', '.bmp'];
+                this.initializeElements();
+                this.setupEventListeners();
+                this.loadSupportedFormats();
+            }
+
+            async loadSupportedFormats() {
+                try {
+                    const response = await fetch('/api/supported-formats');
+                    const data = await response.json();
+                    this.supportedExtensions = data.extensions;
+                    this.updateDropZoneText(data.formats);
+                } catch (error) {
+                    console.warn('Could not load supported formats, using defaults');
+                }
+            }
+
+            updateDropZoneText(formats) {
+                const subtext = document.querySelector('.drop-zone-subtext');
+                subtext.textContent = `Supports ${formats.join(' and ')} files • All processing happens in your browser`;
+            }
+
+            initializeElements() {
+                this.dropZone = document.getElementById('dropZone');
+                this.fileList = document.getElementById('fileList');
+                this.fileItems = document.getElementById('fileItems');
+                this.previewSection = document.getElementById('previewSection');
+                this.previewGif = document.getElementById('previewGif');
+                this.noPreview = document.getElementById('noPreview');
+                this.loading = document.getElementById('loading');
+                this.message = document.getElementById('message');
+                this.generateBtn = document.getElementById('generateBtn');
+                this.downloadBtn = document.getElementById('downloadBtn');
+                this.fpsInput = document.getElementById('fps');
+                this.backgroundInput = document.getElementById('background');
+            }
+
+            setupEventListeners() {
+                // Drag and drop
+                this.dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    this.dropZone.classList.add('dragover');
+                });
+
+                this.dropZone.addEventListener('dragleave', () => {
+                    this.dropZone.classList.remove('dragover');
+                });
+
+                this.dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    this.dropZone.classList.remove('dragover');
+                    this.handleFiles(e.dataTransfer.files);
+                });
+
+                // Click to select files
+                this.dropZone.addEventListener('click', () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.multiple = true;
+                    input.accept = this.supportedExtensions.join(',');
+                    input.onchange = (e) => this.handleFiles(e.target.files);
+                    input.click();
+                });
+
+                // Generate button
+                this.generateBtn.addEventListener('click', () => this.generateGif());
+
+                // Download button
+                this.downloadBtn.addEventListener('click', () => this.downloadGif());
+            }
+
+            handleFiles(files) {
+                const validFiles = Array.from(files).filter(file => {
+                    const ext = '.' + file.name.toLowerCase().split('.').pop();
+                    return this.supportedExtensions.includes(ext);
+                });
+
+                if (validFiles.length === 0) {
+                    this.showMessage(`Please select ${this.supportedExtensions.join(' or ')} files only.`, 'error');
+                    return;
+                }
+
+                this.files = validFiles;
+                this.updateFileList();
+                this.generateBtn.disabled = false;
+                this.showMessage(`${validFiles.length} files selected. Ready to generate GIF!`, 'success');
+            }
+
+            updateFileList() {
+                if (this.files.length === 0) {
+                    this.fileList.style.display = 'none';
+                    return;
+                }
+
+                this.fileList.style.display = 'block';
+                this.fileItems.innerHTML = '';
+
+                this.files.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <div class="file-info">
+                            <span class="file-icon">🖼️</span>
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-size">(${this.formatFileSize(file.size)})</span>
+                        </div>
+                        <button class="remove-file" onclick="gifCreator.removeFile(${index})">×</button>
+                    `;
+                    this.fileItems.appendChild(fileItem);
+                });
+            }
+
+            removeFile(index) {
+                this.files.splice(index, 1);
+                this.updateFileList();
+                if (this.files.length === 0) {
+                    this.generateBtn.disabled = true;
+                    this.previewSection.style.display = 'none';
+                }
+            }
+
+            async generateGif() {
+                if (this.files.length === 0) return;
+
+                this.loading.style.display = 'block';
+                this.generateBtn.disabled = true;
+                this.downloadBtn.disabled = true;
+                this.hideMessage();
+
+                try {
+                    const fps = parseFloat(this.fpsInput.value);
+                    const background = this.backgroundInput.value;
+
+                    console.log('Starting GIF creation process...');
+                    console.log('Files:', this.files.map(f => f.name));
+                    console.log('FPS:', fps);
+                    console.log('Background:', background);
+
+                    // Check if gif.js is available
+                    if (typeof GIF === 'undefined') {
+                        throw new Error('gif.js library not loaded. Please refresh the page.');
+                    }
+
+                    let maxWidth = 0;
+                    let maxHeight = 0;
+                    const images = [];
+
+                    // Load and process all images first
+                    console.log(`Loading ${this.files.length} images...`);
+                    for (let i = 0; i < this.files.length; i++) {
+                        const file = this.files[i];
+                        console.log(`Loading image ${i + 1}/${this.files.length}: ${file.name}`);
+                        const img = await this.loadImage(file);
+                        maxWidth = Math.max(maxWidth, img.width);
+                        maxHeight = Math.max(maxHeight, img.height);
+                        images.push(img);
+                        console.log(`Image ${i + 1} loaded: ${img.width}x${img.height}`);
+                    }
+                    console.log(`All images loaded. Max dimensions: ${maxWidth}x${maxHeight}`);
+
+                     // Create GIF with minimal configuration
+                     const gif = new GIF({
+                         workers: 1,
+                         quality: 10,
+                         width: maxWidth,
+                         height: maxHeight
+                     });
+
+                    console.log('GIF object created, adding frames...');
+
+                    // Add frames to GIF
+                    for (let i = 0; i < images.length; i++) {
+                        const img = images[i];
+                        console.log(`Creating frame ${i + 1}/${images.length}`);
+                        
+                        // Create canvas and draw image centered
+                        const canvas = document.createElement('canvas');
+                        canvas.width = maxWidth;
+                        canvas.height = maxHeight;
+                        const ctx = canvas.getContext('2d');
+
+                        // Fill background
+                        ctx.fillStyle = background;
+                        ctx.fillRect(0, 0, maxWidth, maxHeight);
+
+                        // Center the image
+                        const x = (maxWidth - img.width) / 2;
+                        const y = (maxHeight - img.height) / 2;
+                        ctx.drawImage(img, x, y);
+
+                        // Add frame with proper delay
+                        const delay = Math.round(1000 / fps);
+                        console.log(`Adding frame ${i + 1} with delay ${delay}ms`);
+                        gif.addFrame(canvas, { delay: delay });
+                    }
+
+                     console.log('All frames added, setting up event handlers...');
+
+                     // Manual progress simulation since gif.js progress might not work
+                     let progressInterval;
+                     let progress = 0;
+                     const startTime = Date.now();
+
+                     // Add timeout to prevent infinite hanging
+                     const timeout = setTimeout(() => {
+                         clearInterval(progressInterval);
+                         console.error('GIF creation timed out after 60 seconds');
+                         this.showMessage('GIF creation timed out. Please try with fewer or smaller images.', 'error');
+                         this.generateBtn.disabled = false;
+                         this.loading.style.display = 'none';
+                     }, 60000);
+                     
+                     const updateProgress = () => {
+                         const elapsed = Date.now() - startTime;
+                         const estimatedTotal = images.length * 2000; // Estimate 2 seconds per frame
+                         progress = Math.min(0.9, elapsed / estimatedTotal); // Cap at 90% until finished
+                         
+                         const loadingText = this.loading.querySelector('div:last-child');
+                         if (loadingText) {
+                             loadingText.textContent = `Creating your GIF... ${Math.round(progress * 100)}%`;
+                         }
+                     };
+                     
+                     progressInterval = setInterval(updateProgress, 500);
+
+                     // Render GIF
+                     gif.on('finished', (blob) => {
+                         clearTimeout(timeout);
+                         clearInterval(progressInterval);
+                         console.log('GIF creation finished! Size:', blob.size, 'bytes');
+                         this.gifBlob = blob;
+                         this.showPreview(blob);
+                         this.downloadBtn.disabled = false;
+                         this.generateBtn.disabled = false;
+                         this.loading.style.display = 'none';
+                         this.showMessage('GIF created successfully!', 'success');
+                     });
+
+                     gif.on('progress', (p) => {
+                         console.log('GIF progress:', p);
+                         // Update loading message with progress
+                         const loadingText = this.loading.querySelector('div:last-child');
+                         if (loadingText) {
+                             loadingText.textContent = `Creating your GIF... ${Math.round(p * 100)}%`;
+                         }
+                     });
+
+                     gif.on('error', (error) => {
+                         clearTimeout(timeout);
+                         clearInterval(progressInterval);
+                         console.error('GIF creation error:', error);
+                         this.showMessage('Error creating GIF: ' + error.message, 'error');
+                         this.generateBtn.disabled = false;
+                         this.loading.style.display = 'none';
+                     });
+
+                     console.log('Starting GIF render...');
+                     
+                     // Add a small delay to ensure everything is set up
+                     setTimeout(() => {
+                         console.log('Actually starting render now...');
+                         gif.render();
+                     }, 100);
+
+                } catch (error) {
+                    console.error('Error with gif.js, trying fallback method:', error);
+                    // Try fallback method with gifshot
+                    this.generateGifFallback(images, fps, background, maxWidth, maxHeight);
+                }
+            }
+
+            async generateGifFallback(images, fps, background, maxWidth, maxHeight) {
+                try {
+                    console.log('Using gifshot fallback method...');
+                    
+                    if (typeof gifshot === 'undefined') {
+                        throw new Error('No GIF creation libraries available. Please refresh the page.');
+                    }
+
+                    // Convert images to data URLs
+                    const imageDataUrls = [];
+                    for (let i = 0; i < images.length; i++) {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = maxWidth;
+                        canvas.height = maxHeight;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Fill background
+                        ctx.fillStyle = background;
+                        ctx.fillRect(0, 0, maxWidth, maxHeight);
+                        
+                        // Center the image
+                        const x = (maxWidth - images[i].width) / 2;
+                        const y = (maxHeight - images[i].height) / 2;
+                        ctx.drawImage(images[i], x, y);
+                        
+                        imageDataUrls.push(canvas.toDataURL('image/png'));
+                    }
+
+                    console.log('Created data URLs, generating GIF with gifshot...');
+
+                    gifshot.createGIF({
+                        images: imageDataUrls,
+                        gifWidth: maxWidth,
+                        gifHeight: maxHeight,
+                        interval: 1000 / fps,
+                        numFrames: images.length,
+                        frameDuration: 1,
+                        fontWeight: 'normal',
+                        fontSize: '16px',
+                        fontFamily: 'sans-serif',
+                        fontColor: '#ffffff',
+                        textAlign: 'center',
+                        textBaseline: 'bottom',
+                        sampleInterval: 10,
+                        numWorkers: 1
+                    }, (obj) => {
+                        if (obj.error) {
+                            console.error('gifshot error:', obj.error);
+                            this.showMessage('Error creating GIF: ' + obj.error, 'error');
+                        } else {
+                            console.log('GIF created with gifshot! Size:', obj.image.length);
+                            // Convert data URL to blob
+                            const byteString = atob(obj.image.split(',')[1]);
+                            const mimeString = obj.image.split(',')[0].split(':')[1].split(';')[0];
+                            const ab = new ArrayBuffer(byteString.length);
+                            const ia = new Uint8Array(ab);
+                            for (let i = 0; i < byteString.length; i++) {
+                                ia[i] = byteString.charCodeAt(i);
+                            }
+                            const blob = new Blob([ab], { type: mimeString });
+                            
+                            this.gifBlob = blob;
+                            this.showPreview(blob);
+                            this.downloadBtn.disabled = false;
+                            this.generateBtn.disabled = false;
+                            this.loading.style.display = 'none';
+                            this.showMessage('GIF created successfully!', 'success');
+                        }
+                    });
+
+                } catch (error) {
+                    console.error('Fallback method also failed:', error);
+                    this.showMessage('Error creating GIF: ' + error.message, 'error');
+                    this.generateBtn.disabled = false;
+                    this.loading.style.display = 'none';
+                }
+            }
+
+            loadImage(file) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        console.log(`Loaded image: ${file.name}, size: ${img.width}x${img.height}`);
+                        resolve(img);
+                    };
+                    img.onerror = (error) => {
+                        console.error(`Failed to load image: ${file.name}`, error);
+                        reject(new Error(`Failed to load image: ${file.name}`));
+                    };
+                    img.src = URL.createObjectURL(file);
+                });
+            }
+
+            showPreview(blob) {
+                this.previewSection.style.display = 'block';
+                this.noPreview.style.display = 'none';
+                this.previewGif.style.display = 'block';
+                this.previewGif.src = URL.createObjectURL(blob);
+            }
+
+            downloadGif() {
+                if (!this.gifBlob) return;
+
+                const url = URL.createObjectURL(this.gifBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `animation_${Date.now()}.gif`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            showMessage(text, type) {
+                this.message.innerHTML = `<div class="${type}">${text}</div>`;
+            }
+
+            hideMessage() {
+                this.message.innerHTML = '';
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        }
+
+        // Initialize the application
+        const gifCreator = new GifCreator();
+    </script>
+</body>
+</html>
