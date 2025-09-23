@@ -1,0 +1,39 @@
+---
+description: Python coding standards and style guidelines
+globs: ["**/*.py"]
+alwaysApply: true
+---
+
+# Python Code Style & Standards
+
+## Style Guidelines
+- Follow PEP 8 style guidelines
+- Use type hints where appropriate
+- Prefer f-strings for string formatting
+- Use descriptive variable and function names
+- Add docstrings for all public functions and classes
+- Keep functions focused and single-purpose
+
+## File Naming
+- Use snake_case for Python files
+- Use descriptive names that indicate purpose
+- Batch files should be clearly named (e.g., `create_gif.bat`)
+
+## Error Handling
+- Use specific exception types
+- Provide meaningful error messages
+- Log errors appropriately
+- Gracefully handle missing files or invalid inputs
+- Validate user inputs thoroughly
+
+## Performance
+- Process images efficiently to avoid memory issues
+- Implement progress indicators for long operations
+- Consider batch processing for multiple files
+- Optimize for both speed and memory usage
+
+## Memory Management
+- Process images in chunks when possible
+- Clean up temporary files
+- Monitor memory usage for large batch operations
+- Implement proper resource cleanup

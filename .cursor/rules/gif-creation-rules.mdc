@@ -1,0 +1,38 @@
+---
+description: GIF creation and image processing guidelines
+globs: ["core/**/*.py", "console/**/*.py"]
+alwaysApply: true
+---
+
+# GIF Creation & Image Processing Guidelines
+
+## Image Processing
+- Always validate input images before processing
+- Handle various image formats (PNG, JPEG, WebP, etc.)
+- Implement proper error handling for corrupted or unsupported files
+- Use Pillow (PIL) for image manipulation
+- Optimize GIF output for file size while maintaining quality
+
+## GIF Creation
+- Support configurable frame rates and durations
+- Allow custom frame ordering and selection
+- Implement proper color palette optimization
+- Handle transparency appropriately
+- Provide progress feedback for long operations
+
+## Security
+- Validate all file inputs
+- Sanitize file paths to prevent directory traversal
+- Limit file sizes to prevent memory exhaustion
+- Handle temporary files securely
+
+## Dependencies
+- **Core**: Pillow (PIL) for image processing
+- **Console**: Standard library only (preferred)
+- Keep dependencies minimal and well-maintained
+
+## Testing
+- Write unit tests for core functionality
+- Test with various image formats and sizes
+- Test error conditions and edge cases
+- Validate GIF output quality and file size

@@ -1,0 +1,24 @@
+---
+description: Project overview and architecture guidelines
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Giffer Tool Console - Project Overview
+
+## Project Structure
+This is a GIF creation tool with a console interface:
+- **Console**: Command-line interface for batch GIF creation
+- **Core**: Shared libraries for image processing and GIF creation
+
+## File Organization
+- Core functionality goes in `core/` directory
+- Interface-specific code goes in `console/` directory
+- Shared dependencies in root `requirements.txt`
+- Interface-specific dependencies in subdirectory `requirements.txt`
+
+## Architecture Principles
+- Keep core library pure - no UI dependencies
+- Console tool should remain simple and lightweight
+- Each component has its own dependencies and requirements
+- Easy maintenance: Changes to core logic automatically benefit the interface

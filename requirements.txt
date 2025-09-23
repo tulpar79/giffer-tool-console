@@ -1,8 +1,2 @@
-# Shared dependencies for GIF Creator Tool
+# Dependencies for GIF Creator Console Tool
 Pillow>=9.0.0
-
-# For console tool only
-# No additional dependencies needed
-
-# For web interface only  
-# Flask>=2.3.0  # Uncomment if using web interface

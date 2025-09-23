@@ -1,0 +1,41 @@
+---
+description: Development workflow and documentation guidelines
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Development Guidelines
+
+## Documentation
+- Keep README files updated with usage examples
+- Document all command-line options
+- Provide clear error messages and help text
+- Include sample images and expected outputs
+
+## Deployment
+- Console tool should work cross-platform
+- Include proper requirements files for each component
+- Provide clear setup instructions
+
+## User Experience
+- Provide clear progress feedback
+- Use intuitive command-line interfaces
+- Include helpful error messages and suggestions
+- Support both novice and advanced users
+
+## Development Tips
+1. Always test core changes with the console interface
+2. Keep core library pure - no UI dependencies
+3. Use type hints in core functions for better IDE support
+4. Write tests for core functions (consider adding `tests/` directory)
+5. Document new features in the interface
+
+## Future Extensions
+This structure makes it easy to add:
+- **GUI Interface** (tkinter, PyQt, etc.)
+- **REST API** (FastAPI, Django REST)
+- **Desktop App** (Electron, PyInstaller)
+- **Mobile App** (React Native, Flutter)
+- **Command Line Tools** (different argument styles)
+- **Batch Processing** (multiple GIFs at once)
+- **Cloud Functions** (AWS Lambda, Google Cloud Functions)

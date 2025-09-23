@@ -1,6 +1,6 @@
 # GIF Creator Tool - Modular Structure
 
-This repository now uses a modular architecture that separates core functionality from interface implementations, making it easy to maintain and extend.
+This repository uses a modular architecture that separates core functionality from the console interface, making it easy to maintain and extend.
 
 ## 🏗️ Repository Structure
 
@@ -15,15 +15,8 @@ giffer-tool-console/
 │   ├── giffer.py                # CLI application
 │   ├── create_gif.bat           # Windows drag-and-drop wrapper
 │   └── requirements.txt         # Console-specific dependencies
-├── web/                          # 🌐 Web interface
-│   ├── app.py                   # Flask web application
-│   ├── templates/
-│   │   └── index.html           # Web interface template
-│   ├── requirements.txt         # Web-specific dependencies
-│   ├── Procfile                 # Railway deployment config
-│   └── railway.json             # Railway configuration
 ├── requirements.txt              # 📦 Shared dependencies
-└── README.md                    # 📖 Original documentation
+└── README.md                    # 📖 Documentation
 ```
 
 ## 🎯 Benefits of This Structure
@@ -31,17 +24,16 @@ giffer-tool-console/
 ### ✅ **Clean Separation**
 - **Core library**: Pure business logic, no UI dependencies
 - **Console tool**: Simple CLI interface using core library
-- **Web interface**: Modern web UI using core library
-- **Easy maintenance**: Changes to core logic automatically benefit all interfaces
+- **Easy maintenance**: Changes to core logic automatically benefit the interface
 
 ### ✅ **Easy Extension**
-- Add new file formats in `core/utils.py` → automatically available everywhere
-- Add new processing features in `core/image_processor.py` → all interfaces get them
+- Add new file formats in `core/utils.py` → automatically available
+- Add new processing features in `core/image_processor.py` → interface gets them
 - Create new interfaces (GUI, API, etc.) by importing the core library
 
 ### ✅ **Independent Development**
 - Console tool remains simple and lightweight
-- Web interface can evolve independently
+- Core library can evolve independently
 - Each component has its own dependencies and requirements
 
 ## 🚀 Quick Start
@@ -57,26 +49,6 @@ python console/giffer.py file1.png file2.bmp
 # Or drag files onto console/create_gif.bat (Windows)
 ```
 
-### Web Interface
-```bash
-# Install dependencies
-pip install -r web/requirements.txt
-
-# Run web server
-cd web
-python app.py
-
-# Open http://localhost:5000 in your browser
-```
-
-### Deploy Web Interface to Railway
-```bash
-# Navigate to web directory
-cd web
-
-# Deploy to Railway (if you have Railway CLI)
-railway deploy
-```
 
 ## 🔧 Development Workflow
 
@@ -93,7 +65,7 @@ railway deploy
    python console/giffer.py newformat.tga
    ```
 
-3. **Web interface automatically supports it** - no changes needed!
+3. **Console tool automatically supports it** - no changes needed!
 
 ### Adding New Processing Features
 
@@ -110,11 +82,6 @@ railway deploy
    parser.add_argument('--new-feature', action='store_true')
    ```
 
-3. **Update web interface** (if needed):
-   ```html
-   <!-- Add UI control for new feature -->
-   <input type="checkbox" id="newFeature">
-   ```
 
 ### Creating New Interfaces
 
@@ -137,9 +104,6 @@ railway deploy
 - Uses core library dependencies only
 - No additional dependencies needed
 
-### Web Interface
-- `Flask>=2.3.0` - Web framework
-- `Pillow>=9.0.0` - Image processing (via core library)
 
 ## 🔄 Migration from Old Structure
 
@@ -151,16 +115,15 @@ The old `giffer.py` has been refactored into:
 
 **All functionality is preserved** - the console tool works exactly the same as before!
 
-## 🎨 Interface Comparison
+## 🎨 Console Tool Features
 
-| Feature | Console Tool | Web Interface |
-|---------|-------------|---------------|
-| **File Input** | Drag & drop (Windows) / CLI args | Drag & drop in browser |
-| **Processing** | Server-side (Python) | Client-side (JavaScript) |
-| **Preview** | No preview | Live preview |
-| **Dependencies** | Minimal (Pillow only) | Flask + Pillow |
-| **Deployment** | Local only | Railway/any web host |
-| **Privacy** | Files stay local | Files stay in browser |
+| Feature | Description |
+|---------|-------------|
+| **File Input** | Drag & drop (Windows) / CLI args |
+| **Processing** | Server-side (Python) |
+| **Dependencies** | Minimal (Pillow only) |
+| **Deployment** | Local only |
+| **Privacy** | Files stay local |
 
 ## 🛠️ Core Library API
 
@@ -214,18 +177,18 @@ This structure makes it easy to add:
 
 ## 📝 Development Tips
 
-1. **Always test core changes** with both console and web interfaces
+1. **Always test core changes** with the console interface
 2. **Keep core library pure** - no UI dependencies
 3. **Use type hints** in core functions for better IDE support
 4. **Write tests** for core functions (consider adding `tests/` directory)
-5. **Document new features** in both interfaces
+5. **Document new features** in the interface
 
 ## 🔍 Troubleshooting
 
 ### Import Errors
 ```bash
 # Make sure you're in the right directory
-cd console  # or cd web
+cd console
 
 # Check Python path
 python -c "import sys; print(sys.path)"
@@ -237,13 +200,8 @@ python -c "import sys; print(sys.path)"
 pip install -r requirements.txt
 
 # Install interface-specific dependencies
-pip install -r console/requirements.txt  # or web/requirements.txt
+pip install -r console/requirements.txt
 ```
 
-### Web Interface Not Loading
-- Check Flask is installed: `pip install Flask`
-- Verify port 5000 is available
-- Check browser console for JavaScript errors
-
-This modular structure gives you the best of both worlds: a simple, clean console tool and a modern web interface, with easy code sharing and future extensibility!
+This modular structure gives you a simple, clean console tool with easy code sharing and future extensibility!
 

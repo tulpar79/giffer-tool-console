@@ -1,8 +1,8 @@
 # GIF Creator Tool
 
-A modular tool to convert multiple PNG and BMP files into animated GIFs. Available as both a console tool and web interface.
+A console tool to convert multiple PNG and BMP files into animated GIFs.
 
-> **New Structure**: This repository now uses a modular architecture with a shared core library. See [README-STRUCTURE.md](README-STRUCTURE.md) for details on the new organization.
+> **Modular Structure**: This repository uses a modular architecture with a shared core library. See [README-STRUCTURE.md](README-STRUCTURE.md) for details on the organization.
 
 ## Features
 
@@ -14,27 +14,13 @@ A modular tool to convert multiple PNG and BMP files into animated GIFs. Availab
 
 ## Quick Start
 
-### Console Tool (Original)
 1. **Install Python** (if not already installed)
 2. **Install dependencies**:
    ```bash
-   pip install -r console/requirements.txt
+   pip install -r requirements.txt
    ```
 3. **Drag PNG and BMP files** onto `console/create_gif.bat`
 4. **GIF will be created** in the same folder as your first image file
-
-### Web Interface (New!)
-1. **Install dependencies**:
-   ```bash
-   pip install -r web/requirements.txt
-   ```
-2. **Run web server**:
-   ```bash
-   cd web
-   python app.py
-   ```
-3. **Open browser** to `http://localhost:5000`
-4. **Drag & drop files** in the browser - all processing happens client-side!
 
 ## Usage
 
@@ -54,12 +40,6 @@ python console/giffer.py file1.png file2.bmp file3.png
 python console/giffer.py file1.png file2.bmp file3.png -o output.gif -f 10 --background "#ffffff"
 ```
 
-### Web Interface Usage
-- Open the web interface in your browser
-- Drag and drop PNG/BMP files into the drop zone
-- Adjust FPS and background color settings
-- Click "Generate GIF" to create your animation
-- Preview the result and download when satisfied
 
 ## Command Line Options
 
@@ -119,31 +99,12 @@ The tool processes images in the following way:
 
 ## Installation
 
-### Console Tool
 1. Clone or download this repository
 2. Install Python dependencies:
    ```bash
-   pip install -r console/requirements.txt
+   pip install -r requirements.txt
    ```
 3. Ready to use!
-
-### Web Interface
-1. Clone or download this repository
-2. Install Python dependencies:
-   ```bash
-   pip install -r web/requirements.txt
-   ```
-3. Run the web server:
-   ```bash
-   cd web
-   python app.py
-   ```
-4. Open `http://localhost:5000` in your browser
-
-### Deploy to Railway
-1. Navigate to the `web/` directory
-2. Connect your repository to Railway
-3. Railway will automatically detect and deploy the Flask application
 
 ## Troubleshooting
 

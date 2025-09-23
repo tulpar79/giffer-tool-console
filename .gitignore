@@ -55,9 +55,6 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
-# Flask stuff:
-instance/
-.webassets-cache
 
 # Scrapy stuff:
 .scrapy
@@ -168,8 +165,6 @@ logs/
 *.swo
 *~
 
-# Railway deployment
-.railway/
 
 # Local configuration
 config.local.py
